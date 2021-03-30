@@ -3,8 +3,10 @@ Input = require"libs/boipushy-master/Input"
 Timer = require "libs/hump-temp-master/timer"
 Camera = require "libs/hump-temp-master/camera"
 wf = require("libs/windfield")
-w, h = love.window.getDesktopDimensions()
 require("utils")
+require("globals")
+
+w, h = love.window.getDesktopDimensions()
 --sx,sy = w/gw,h/gh
 
 
@@ -98,9 +100,9 @@ function recursiveEnumerate(folder,file_list)
     local items = love.filesystem.getDirectoryItems(folder)
     for _, item in ipairs(items) do
         local file = folder ..'/'.. item
-        if love.filesystem.getInfo(file) then
+        if love.filesystem.getInfo(file,"file") then
             table.insert(file_list,file)
-        elseif love.filesystem.isDirectory(file) then
+        elseif love.filesystem.getInfo(file,"directory") then
             recursiveEnumerate(file,file_list)
         end
     end
