@@ -5,10 +5,9 @@ function Stage:new()
     self.area:addPhysicsWorld() -- добавление физики
 
     self.main_canvas = love.graphics.newCanvas(gw, gh) -- слой с графикой 
-    print(h)
     self.timer = Timer()
     self.player = self.area:addGameObject("Player",gw/2,gh/2) -- теперь эта область имеет переменну игрока
-    input:bind("k",function() self.player:destroy() end) -- умри 
+    --input:bind("k",function() self.player:destroy() end) -- умри 
 end
 
 function Stage:destroy()

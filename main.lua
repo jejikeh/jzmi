@@ -56,7 +56,7 @@ function love.load()
 
     input:bind("z",function() gotoRoom("Stage","Stage") end) -- пусти
     input:bind("x",function() gotoRoom("Stage1","Stage1") end)
-    input:bind("s",function() camera:shake(4,0.5,500)end) -- трясем
+    --input:bind("s",function() camera:shake(4,0.5,500)end) -- трясем
 
 
     input:bind('left', 'left')
@@ -76,6 +76,9 @@ function love.load()
         print("-------------------------------------")
     end)
     --image = love.graphics.newImage("1.png")
+
+    slow_amount = 1 -- замедление времени
+    flash_frames = nil
 
     rooms = {} -- все комнаты:(
     current_room = nil -- текущая комната
@@ -111,11 +114,13 @@ end
 function love.update(dt)
     
 
-    if current_room then current_room:update(dt)end -- если в дный мнт комната ее нужно обновитть
+    if current_room then current_room:update(dt * slow_amount)end -- если в дный мнт комната ее нужно обновитть
+    if slow_amount >= 1 then
+        slow_amount = 1
+    end
 
-
-    timer:update(dt)
-    camera:update(dt)
+    timer:update(dt * slow_amount) -- умножается на параметр замедления
+    camera:update(dt * slow_amount)
     
     if input:pressed('1') then 
         --current_room = Stage("test","test",400,300,20)
@@ -131,11 +136,30 @@ function love.update(dt)
     end
 end
 
+function slow(amount, duration)
+    slow_amount = amount
+    timer:tween(duration, _G, {slow_amount = 1}, 'in-out-cubic')
+end
+
+function flash(frames)
+    flash_frames = frames
+end
+
 
 function love.draw()
     if current_room then current_room:draw() end -- нужно отрисовать
     --circle:draw()
     --love.graphics.draw(image,0,0) 
+
+    if flash_frames then
+        flash_frames = flash_frames - 1
+        if flash_frames == -1 then flash_frames = nil end
+    end
+    if flash_frames then
+        love.graphics.setColor(background_color)
+        love.graphics.rectangle("fill",0,0, gw*sx,gh*sy)
+        love.graphics.setColor(1,1,1)
+    end
 end
 
 function addRoom(room_type,room_name,...) -- создаем комнату

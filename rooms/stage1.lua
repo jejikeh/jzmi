@@ -7,7 +7,7 @@ function Stage1:new()
     self.main_canvas = love.graphics.newCanvas(gw, gh) -- слой с графикой 
     self.timer = Timer()
     self.player = self.area:addGameObject("Player",random(0,gw),random(0,gh)) -- теперь эта область имеет переменну игрока
-    input:bind("k",function() self.player:destroy() end) -- умри 
+    --input:bind("k",function() self.player:destroy() end) -- умри 
 end
 
 function Stage1:destroy()
