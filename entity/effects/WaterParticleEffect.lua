@@ -7,7 +7,7 @@ function WaterParticleEffect:new(area,x,y,opts)
     self.color = opts.color
     self.t= opts.parent.r
     self.v = 60
-    self.timer:tween(0.5,self,{r=4},"in-out-cubic",function() 
+    self.timer:tween(0.5,self,{r=2},"in-out-cubic",function() 
         self.timer:tween(0.5,self,{r=0},"in-out-cubic",function() self.dead = true end)
     end)
 

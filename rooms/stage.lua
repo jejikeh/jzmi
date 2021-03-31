@@ -1,11 +1,11 @@
 Stage = Object:extend()
 
 function Stage:new()
+
     self.area = Area(self) -- область в которой будут обьекты
     self.area:addPhysicsWorld() -- добавление физики
-
-    self.main_canvas = love.graphics.newCanvas(gw, gh) -- слой с графикой 
     self.timer = Timer()
+    self.main_canvas = love.graphics.newCanvas(gw, gh) -- слой с графикой 
     self.player = self.area:addGameObject("Player",gw/2,gh/2) -- теперь эта область имеет переменну игрока
     --input:bind("k",function() self.player:destroy() end) -- умри 
 end
@@ -21,7 +21,7 @@ function Stage:update(dt)
     self.area:update(dt)
     self.timer:update(dt)
     local dx,dy = self.player.x - camera.x + gw/2 /camera.scale,self.player.y - camera.y  + gh/2/ camera.scale
-    camera:move(dx/1*dt,dy/1*dt)
+    camera:move(dx/0.5*dt,dy/0.5*dt)
 end
 
 function Stage:draw()
@@ -34,7 +34,7 @@ function Stage:draw()
         camera:detach()
     love.graphics.setCanvas()
 
-    love.graphics.setColor(225,225,225,225)
+    love.graphics.setColor(1,1,1,1)
     love.graphics.setBlendMode('alpha','premultiplied')
     love.graphics.draw(self.main_canvas,0,0,0,sy,sx)
     love.graphics.setBlendMode('alpha')

@@ -2,7 +2,7 @@ Projectile = GameObject:extend()
 
 function Projectile:new(area,x,y,r,s,v,dir,opts) -- пуля
     Projectile.super.new(self,area,x,y,opts)
-    self.s = 4
+    self.s = 2
     self.v = 500
     self.trail = {}
     self.r = r 

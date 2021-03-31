@@ -2,6 +2,7 @@ Object = require "libs/classic-master/classic"
 Input = require"libs/boipushy-master/Input"
 Timer = require "libs/hump-temp-master/timer"
 Camera = require "libs/hump-temp-master/camera"
+fn = require "libs/Moses-master/moses"
 wf = require("libs/windfield")
 require("utils")
 require("globals")

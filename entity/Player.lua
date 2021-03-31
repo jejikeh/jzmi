@@ -6,7 +6,7 @@ function Player:new(area,x,y,otps)
     input:bind("k",function() self:destroy() end)
     self.area = area
     self.x,self.y =x,y
-    self.w,self.h = 16,16
+    self.w,self.h = 8,16
     self.collider = self.area.world:newCircleCollider(self.x,self.y,self.w) -- создание колайдера
     self.trail = {}
     self.dir = -1
@@ -19,7 +19,7 @@ function Player:new(area,x,y,otps)
         self.trail.x[i] = x-- координаты
         self.trail.y[i] = y + i -- чтобы спавнились сверху а не в одной точке
         --print(self.trail.y[i])
-        self.trail.collider[i] = self.area.world:newCircleCollider(self.trail.x[i],self.trail.y[i] + (self.w + (self.w -i)),self.w) --[[
+        self.trail.collider[i] = self.area.world:newCircleCollider(self.trail.x[i],self.trail.y[i] + (self.w-i),self.w) --[[
             каждый отдельный обьект в массиве определяется как колайдер. Кргу должен иметь координаты X Y и радиус
             смезение по игроку для растояние между обьектами в хвосте. Координата + Радиус головы + радиус хвоста
         ]]--
@@ -28,6 +28,10 @@ function Player:new(area,x,y,otps)
     self.collider:setObject(self)
     self.timer:every(1,function() self:shoot(self.x,self.y,self.dir) end)
     self.water_color = water_small_buble
+
+    self.timer:every(0.05,function()
+        self.area:addGameObject("WaterParticleEffect",self.x + random(-gw,gw),self.y + random(-gh,gh),{parent = self, r = random(2,4), d = random(0.15,0.25),color = background_color})
+    end)
     self.timer:every(0.05,function()
         self.area:addGameObject("WaterParticleEffect",self.x + random(-50,50) +self.w * 6 * math.cos(self.r),self.y + random(-50,50)  + self.h* 6 * math.sin(self.r),{parent = self, r = random(2,4), d = random(0.15,0.25),color = self.water_color})
         for i=0,self.trail.n do
@@ -39,11 +43,25 @@ function Player:new(area,x,y,otps)
     self.r = -math.pi /2
     self.rv = 1.66*math.pi
     self.v = 0
+    self.rt = 0
     self.base_max_v = 100
     self.max_v = self.base_max_v
 
     self.a = 100
 
+    self.model= "Kokora"
+    self.polygons = {}
+
+    if self.model == "Kokora" then
+        self.polygons[1] = {
+            self.w/2, 0, -- 1
+            self.w, -self.w/2, -- 2
+            -self.w/2, -self.w, -- 3
+            -self.w, 0, -- 4
+            -self.w/2, self.w, -- 5
+            self.w, self.w/2, -- 6
+        }
+    end
 end
 
 function Player:shoot(x,y)
@@ -71,20 +89,26 @@ function Player:update(dt)
     Player.super.update(self,dt)
 
     self.boosting = false
+    self.stopped = false
     self.max_v = self.base_max_v
     if input:down('up') then 
         self.boosting = true
+        self.stopped = false
         self.max_v = 1.5*self.base_max_v 
+        
     end
     if input:down('down') then 
         self:shoot(self.x,self.y,self.dir)
         self.boosting = false
+        self.stopped = true
         self.max_v = 0.5*self.base_max_v 
     end
     if self.boosting then 
         self.water_color = water_boost_buble 
-    else 
+    elseif self.stopped then 
         self.water_color = water_small_buble 
+    else 
+        self.water_color = background_color
     end
 
 
@@ -100,14 +124,14 @@ function Player:update(dt)
     self.v = math.min(self.v + self.a*dt, self.max_v) -- скорость лимит max_v
     if self.collider then 
         self.collider:setLinearVelocity(self.v*math.cos(self.r), self.v*math.sin(self.r)) 
-        camera.scale = 1 - self.trail.n/100
+        --camera.scale = 1
         --camera.scale = 0.5
     end
-    
     if self.trail.collider then -- если есть хвост
         for i=0,self.trail.n do
             if i==0 then-- для 0 элемента
-                self.trail.collider[i]:setLinearVelocity(self.v*(self.x- self.trail.x[i])/50,self.v*(self.y- self.trail.y[i])/50) --[[
+                self.tr = (self.x - self.trail.x[i]) / (self.y - self.trail.y[i])
+                self.trail.collider[i]:setLinearVelocity(self.v*(self.x- self.trail.x[i])/25,self.v*(self.y- self.trail.y[i])/25) --[[
                     0 элемент крепляется и следует к голове поэтому для него отдельно прописываем координату головы
                 ]]--
             else
@@ -122,16 +146,54 @@ end
 
 function Player:draw()
     --camera:attach()
-    love.graphics.circle("line",self.x,self.y,self.w) -- путин
     for i=0,self.trail.n do
-        love.graphics.circle("line",self.trail.x[i],self.trail.y[i],self.w) -- рисуем сразу весь хвост с уменьшением в радиусе
+        --love.graphics.circle("line",self.trail.x[i],self.trail.y[i],self.w) -- рисуем сразу весь хвост с уменьшением в радиусе
         if i==0  then
+            love.graphics.setColor(default_color)
+            pushRotate(self.trail.x[i],self.trail.y[i],self.tr)
+            for _,polygon in ipairs(self.polygons) do
+                local points = fn.map(polygon,function(v,k)
+                    if k % 2 == 1 then
+                        return self.trail.x[i] + v + random(-1.25,1.25) 
+                    else
+                        return self.trail.y[i] + v + random(-1.25,1.25) 
+                    end
+                end)
+                love.graphics.polygon('line',points)
+            end
+            love.graphics.pop()
             --self:shoot(self.trail.x[i],self.trail.y[i])
-            love.graphics.line(self.trail.x[i],self.trail.y[i],self.x,self.y) -- опять также для первого элемента устанавливаем линии по голове
+            --love.graphics.line(self.trail.x[i],self.trail.y[i],self.x,self.y) -- опять также для первого элемента устанавливаем линии по голове
         else
-            love.graphics.line(self.trail.x[i],self.trail.y[i],self.trail.x[i-1],self.trail.y[i-1]) --также как как и в обработке направления
+            love.graphics.setColor(default_color)
+            pushRotate(self.trail.x[i],self.trail.y[i],self.tr)
+            for _,polygon in ipairs(self.polygons) do
+                local points = fn.map(polygon,function(v,k)
+                    if k % 2 == 1 then
+                        return self.trail.x[i] + v + random(-1.25,1.25) 
+                    else
+                        return self.trail.y[i] + v + random(-1.25,1.25) 
+                    end
+                end)
+                love.graphics.polygon('line',points)
+            end
+            love.graphics.pop()
+            --love.graphics.line(self.trail.x[i],self.trail.y[i],self.trail.x[i-1],self.trail.y[i-1]) --также как как и в обработке направления
         end
     end
+    pushRotate(self.x,self.y,self.r)
+    love.graphics.setColor(default_color)
+    for _,polygon in ipairs(self.polygons) do
+        local points = fn.map(polygon,function(v,k)
+            if k % 2 == 1 then
+                return self.x + v + random(-1.25,1.25) 
+            else
+                return self.y + v + random(-1.25,1.25) 
+            end
+        end)
+        love.graphics.polygon('line',points)
+    end
+    love.graphics.pop()
     --camera:detach()
     --love.graphics.line(self.x,self.y,self.x + 2 * self.w*math.cos(self.r),self.y + 2*self.w*math.sin(self.r))
 end
