@@ -26,7 +26,8 @@ function Player:new(area,x,y,otps)
         self.trail.collider[i]:setObject(self)
     end
     self.collider:setObject(self)
-    self.timer:every(1,function() self:shoot(self.x,self.y,self.dir) end)
+    self.shoot_speed = 1
+    self.timer:every(self.shoot_speed,function() self:shoot(self.x,self.y,self.dir) end)
     self.water_color = water_small_buble
 
     self.timer:every(0.05,function()
@@ -66,6 +67,7 @@ end
 
 function Player:shoot(x,y)
     local d = 1.2*self.w
+    
     self.area:addGameObject('ShootEffect',x+ d*math.cos(self.r),y + d * math.sin(self.r),self,self.d) -- на линии огня эффект
     self.area:addGameObject('Projectile',x+ 1.5 * d * math.cos(self.r) ,y + 1.5 * d * math.sin(self.r),self.r)
     
@@ -95,7 +97,7 @@ function Player:update(dt)
         self.boosting = true
         self.stopped = false
         self.max_v = 1.5*self.base_max_v 
-        
+        self.nt = 0.5
     end
     if input:down('down') then 
         self:shoot(self.x,self.y,self.dir)

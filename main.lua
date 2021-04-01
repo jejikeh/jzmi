@@ -2,10 +2,12 @@ Object = require "libs/classic-master/classic"
 Input = require"libs/boipushy-master/Input"
 Timer = require "libs/hump-temp-master/timer"
 Camera = require "libs/hump-temp-master/camera"
+ripple = require "libs/ripple-master/ripple"
 fn = require "libs/Moses-master/moses"
 wf = require("libs/windfield")
 require("utils")
 require("globals")
+require("libs/SoundManager")
 
 w, h = love.window.getDesktopDimensions()
 --sx,sy = w/gw,h/gh
@@ -48,6 +50,8 @@ function love.load()
     camera = Camera()
     input = Input() -- управление вводом и взводом :/
     timer = Timer() -- управление временем
+    --playSound()
+    soundInit()
 
 
     input:bind('fdown','3') -- нужно перебросить в отдельный файл
@@ -57,7 +61,7 @@ function love.load()
 
     input:bind("z",function() gotoRoom("Stage","Stage") end) -- пусти
     input:bind("x",function() gotoRoom("Stage1","Stage1") end)
-    --input:bind("s",function() camera:shake(4,0.5,500)end) -- трясем
+    input:bind("s",function() playSound()end) -- трясем
 
 
     input:bind('left', 'left')
@@ -114,7 +118,7 @@ end
 
 function love.update(dt)
     
-
+    soundUpdate(dt)
     if current_room then current_room:update(dt * slow_amount)end -- если в дный мнт комната ее нужно обновитть
     if slow_amount >= 1 then
         slow_amount = 1
