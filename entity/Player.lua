@@ -45,7 +45,7 @@ function Player:new(area,x,y,otps)
     self.rv = 1.66*math.pi
     self.v = 0
     self.rt = 0
-    self.base_max_v = 100
+    self.base_max_v = 75
     self.max_v = self.base_max_v
 
     self.a = 100
@@ -70,16 +70,6 @@ function Player:shoot(x,y,time)
     soundShoot()
     self.area:addGameObject('ShootEffect',x+ d*math.cos(self.r),y + d * math.sin(self.r),self,self.d) -- на линии огня эффект
     self.area:addGameObject('Projectile',x+ 1.5 * d * math.cos(self.r) ,y + 1.5 * d * math.sin(self.r),self.r)
-    
-end
-
-function Player:shootLine(x,y)
-    local d = 1.2*self.w
-    soundShoot()
-    self.area:addGameObject('ShootEffect',x+ d*math.cos(self.r),y + d * math.sin(self.r),self,self.d) -- на линии огня эффект
-    self.area:addGameObject('Projectile',x+ 1.5 * d * math.cos(self.r) ,y + 1.5 * d * math.sin(self.r),self.r)
-    self.area:addGameObject('Projectile',x+ 2 * d * math.cos(self.r) ,y + 1.5 * d * math.sin(self.r),self.r)
-    self.area:addGameObject('Projectile',x+ 2.5 * d * math.cos(self.r) ,y + 1.5 * d * math.sin(self.r),self.r)
     
 end
 
@@ -110,7 +100,6 @@ function Player:update(dt)
         self.nt = 0.5
     end
     if input:down('down') then 
-        self:shootLine(self.x,self.y)
         self.boosting = false
         self.stopped = true
         self.max_v = 0.5*self.base_max_v 
@@ -211,6 +200,7 @@ function Player:draw()
 end
 
 function Player:destroy()
+    soundDeath()
     Player.super.destroy(self)
     slow(0.25, 0.5)
     flash(2)

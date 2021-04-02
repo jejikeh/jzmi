@@ -118,7 +118,7 @@ end
 
 function love.update(dt)
     
-    soundUpdate(dt)
+    soundUpdate(slow_amount)
     if current_room then current_room:update(dt * slow_amount)end -- если в дный мнт комната ее нужно обновитть
     if slow_amount >= 1 then
         slow_amount = 1

@@ -2,7 +2,7 @@ function soundInit()
     sources = {}
     playing_sound = {}
     tags = {
-        sfx = {volume = 0.2},
+        sfx = {volume = 0.4},
         master = {volume = 1},
         music = {base_volume = 1, volume = 1, multiplier = 0,loop = true,music = true},
         game = {base_volume = 1, volume = 1, multiplier = 0}
@@ -35,19 +35,25 @@ function register(name,sound_type,tags,music)
 end
 
 function addSound(name)
-    if not playing_sound[name]  --[[or playing_sound[name]:isStopped()--]] then
+    if not playing_sound[name] then
         table.insert( playing_sound,sources[name] )
-        soundUpdate(dt)
-        --playing_sound[name] = sources[name].source:play{volume = sources[name].tags.volume, loop =sources[name].tags.loop }
-    end       
+        --soundUpdate(dt)
+        --playing_sound[name] = sources[name].source:play{volume = tags.master.volume*tags.sfx.volume, loop = tags.loop, pitch =  dt}
+    end
 end
 function soundUpdate(dt)
     for _, sound in ipairs(playing_sound) do
-        --sound.source:stop()
+        sound.source:stop()
         local n = 0
         n = n + 1
         sound.source:play{volume = tags.master.volume*tags.sfx.volume, loop = tags.loop}
         table.remove( playing_sound,n)
+    end
+end
+
+function soundStop()
+    for key in pairs(sources) do
+        sources[key].source:stop()
     end
 end
 
@@ -57,6 +63,10 @@ end
 
 function soundExplosion()
     addSound('game_hurt_2')
+end
+
+function soundDeath()
+    addSound("game_hurt_1")
 end
 
 function randomMusicPlay()

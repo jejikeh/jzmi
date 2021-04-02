@@ -8,10 +8,11 @@ function Stage:new()
     self.main_canvas = love.graphics.newCanvas(gw, gh) -- слой с графикой 
     self.player = self.area:addGameObject("Player",gw/2,gh/2) -- теперь эта область имеет переменну игрока
     --input:bind("k",function() self.player:destroy() end) -- умри 
-    randomMusicPlay()
+    --randomMusicPlay()
 end
 
 function Stage:destroy()
+    soundStop()
     self.area:destroy()
     self.area = nil
 end
