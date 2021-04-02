@@ -27,7 +27,7 @@ function Player:new(area,x,y,otps)
     end
     self.collider:setObject(self)
     self.shoot_speed = 1
-    self.timer:every(self.shoot_speed,function() self:shoot(self.x,self.y,self.dir) end)
+    self.timer:every(self.shoot_speed,function() self:shoot(self.x,self.y) end)
     self.water_color = water_small_buble
 
     self.timer:every(0.05,function()
@@ -65,11 +65,21 @@ function Player:new(area,x,y,otps)
     end
 end
 
-function Player:shoot(x,y)
+function Player:shoot(x,y,time)
     local d = 1.2*self.w
-    
+    soundShoot()
     self.area:addGameObject('ShootEffect',x+ d*math.cos(self.r),y + d * math.sin(self.r),self,self.d) -- на линии огня эффект
     self.area:addGameObject('Projectile',x+ 1.5 * d * math.cos(self.r) ,y + 1.5 * d * math.sin(self.r),self.r)
+    
+end
+
+function Player:shootLine(x,y)
+    local d = 1.2*self.w
+    soundShoot()
+    self.area:addGameObject('ShootEffect',x+ d*math.cos(self.r),y + d * math.sin(self.r),self,self.d) -- на линии огня эффект
+    self.area:addGameObject('Projectile',x+ 1.5 * d * math.cos(self.r) ,y + 1.5 * d * math.sin(self.r),self.r)
+    self.area:addGameObject('Projectile',x+ 2 * d * math.cos(self.r) ,y + 1.5 * d * math.sin(self.r),self.r)
+    self.area:addGameObject('Projectile',x+ 2.5 * d * math.cos(self.r) ,y + 1.5 * d * math.sin(self.r),self.r)
     
 end
 
@@ -100,7 +110,7 @@ function Player:update(dt)
         self.nt = 0.5
     end
     if input:down('down') then 
-        self:shoot(self.x,self.y,self.dir)
+        self:shootLine(self.x,self.y)
         self.boosting = false
         self.stopped = true
         self.max_v = 0.5*self.base_max_v 
@@ -156,9 +166,9 @@ function Player:draw()
             for _,polygon in ipairs(self.polygons) do
                 local points = fn.map(polygon,function(v,k)
                     if k % 2 == 1 then
-                        return self.trail.x[i] + v + random(-1.25,1.25) 
+                        return self.trail.x[i] + v + random(-1,1) 
                     else
-                        return self.trail.y[i] + v + random(-1.25,1.25) 
+                        return self.trail.y[i] + v + random(-1,1) 
                     end
                 end)
                 love.graphics.polygon('line',points)
@@ -172,9 +182,9 @@ function Player:draw()
             for _,polygon in ipairs(self.polygons) do
                 local points = fn.map(polygon,function(v,k)
                     if k % 2 == 1 then
-                        return self.trail.x[i] + v + random(-1.25,1.25) 
+                        return self.trail.x[i] + v + random(-1,1.25) 
                     else
-                        return self.trail.y[i] + v + random(-1.25,1.25) 
+                        return self.trail.y[i] + v + random(-1,1) 
                     end
                 end)
                 love.graphics.polygon('line',points)

@@ -61,7 +61,7 @@ function love.load()
 
     input:bind("z",function() gotoRoom("Stage","Stage") end) -- пусти
     input:bind("x",function() gotoRoom("Stage1","Stage1") end)
-    input:bind("s",function() playSound()end) -- трясем
+    --input:bind("s",function() randomMusicPlay() end) -- трясем
 
 
     input:bind('left', 'left')
