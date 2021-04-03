@@ -126,19 +126,6 @@ function love.update(dt)
 
     timer:update(dt * slow_amount) -- умножается на параметр замедления
     camera:update(dt * slow_amount)
-    
-    if input:pressed('1') then 
-        --current_room = Stage("test","test",400,300,20)
-    end
-    if input:pressed('2') then 
-        --current_room = Typa("test","test",200,300,20)
-    end
-    if input:pressed('3') then 
-        print('3') 
-    end
-    if input:pressed('4') then 
-        print('4') 
-    end
 end
 
 function slow(amount, duration)

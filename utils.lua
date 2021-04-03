@@ -7,6 +7,10 @@ function UUID()
     return(("xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"):gsub("[xy]",fn))
 end
 
+function getAngle(x1,y1,x2,y2) 
+    return math.atan2(x2-x1,y2-y1) -- угол между двумя точками просто тангенс ( катет на катет)
+end
+
 function random(min,max)
     local min, max = min or 0, max or 1
     return (min > max and (love.math.random()*(min - max) + max)) or (love.math.random()*(max - min) + min)

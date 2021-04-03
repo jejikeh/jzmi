@@ -1,8 +1,12 @@
+--[[
+    добавить коммиты
+]]
+
 function soundInit()
     sources = {}
     playing_sound = {}
     tags = {
-        sfx = {volume = 0.4},
+        sfx = {volume = 1},
         master = {volume = 1},
         music = {base_volume = 1, volume = 1, multiplier = 0,loop = true,music = true},
         game = {base_volume = 1, volume = 1, multiplier = 0}
@@ -11,7 +15,7 @@ function soundInit()
     register('game_shoot_1','static',{'master','sfx','game'},false)
     register('game_shoot_2','static',{'master','sfx','game'},false)
     register('game_shoot_3','static',{'master','sfx','game'},false)
-    register('menu_click','static',{'master','sfx','game'},false)
+    --register('menu_click','static',{'master','sfx','game'},false)
     register('game_hurt_1','static',{'master','sfx','game'},false)
     register('game_hurt_2','static',{'master','sfx','game'},false)
 
@@ -20,7 +24,9 @@ function soundInit()
         'Relaxing',
         'RelaxingAmbient',
         --'RelaxingWithoutDrums',
-        'ShopTime'
+        'ShopTime',
+        'HyperHill',
+        'HyperHillAmbient'
     }
     for _, song in ipairs(songs) do register(song,'stream',{'master','music'},true) end
 end
@@ -30,7 +36,7 @@ function register(name,sound_type,tags,music)
         sources[name] = {source = ripple.newSound(love.audio.newSource('resources/sounds/music/'..name.. '.wav',sound_type)),type = sound_type,tags = tags} 
     end
     if not sources[name] and not music then 
-        sources[name] = {source = ripple.newSound(love.audio.newSource('resources/sounds/'..name.. '.ogg',sound_type)),type = sound_type,tags = tags} 
+        sources[name] = {source = ripple.newSound(love.audio.newSource('resources/sounds/'..name.. '.wav',sound_type)),type = sound_type,tags = tags} 
     end
 end
 
@@ -43,11 +49,12 @@ function addSound(name)
 end
 function soundUpdate(dt)
     for _, sound in ipairs(playing_sound) do
-        sound.source:stop()
+        --sound.source:stop()
         local n = 0
         n = n + 1
-        sound.source:play{volume = tags.master.volume*tags.sfx.volume, loop = tags.loop}
-        table.remove( playing_sound,n)
+        sound.source:play{volume = tags.master.volume*tags.sfx.volume, loop = tags.loop,pitch = dt}
+        table.remove(playing_sound,n)
+        
     end
 end
 
@@ -58,15 +65,15 @@ function soundStop()
 end
 
 function soundShoot()
-    addSound('menu_click')
+    addSound('game_shoot_1')
 end
 
 function soundExplosion()
-    addSound('game_hurt_2')
+    addSound('game_hurt_1')
 end
 
 function soundDeath()
-    addSound("game_hurt_1")
+    addSound("game_hurt_2")
 end
 
 function randomMusicPlay()

@@ -1,3 +1,5 @@
+-- добавить коммитов
+
 TickEffect = GameObject:extend()
 
 function TickEffect:new(area,x,y,opts)
