@@ -20,7 +20,7 @@ function love.conf(t)
     t.window.vsync = true
     t.window.fsaa = 0
     t.window.display = 1
-    t.window.highdpi = false
+    t.window.highdpi = true
     t.window.srgb = false
     t.window.x = nil
     t.window.y = nil

@@ -6,7 +6,7 @@ function Player:new(area,x,y,otps)
     input:bind("k",function() self:destroy() end)
     self.area = area
     self.x,self.y =x,y
-    self.w,self.h = 8,16
+    self.w,self.h = 8,8
     self.collider = self.area.world:newCircleCollider(self.x,self.y,self.w) -- создание колайдера
     self.collider:setCollisionClass("Player")
     self.trail = {}
@@ -16,34 +16,12 @@ function Player:new(area,x,y,otps)
     self.trail.collider = {}
     self.trail.x = {} -- массив так как для каждого колайдера будет своя координата
     self.trail.y = {}
-    for i=0,self.trail.n do -- количество елементов в хвосте
-        self.trail.x[i] = x-- координаты
-        self.trail.y[i] = y + i -- чтобы спавнились сверху а не в одной точке
-        --print(self.trail.y[i])
-        self.trail.collider[i] = self.area.world:newCircleCollider(self.trail.x[i],self.trail.y[i] + (self.w-i),self.w) --[[
-            каждый отдельный обьект в массиве определяется как колайдер. Кргу должен иметь координаты X Y и радиус
-            смезение по игроку для растояние между обьектами в хвосте. Координата + Радиус головы + радиус хвоста
-        ]]--
-        self.trail.collider[i]:setObject(self)
-    end
     self.collider:setObject(self)
     self.shoot_speed = 1
     self.timer:every(self.shoot_speed,function() self:shoot(self.x,self.y) end)
     self.water_color = water_small_buble
 
     -- добавить коммиты
-
-    self.timer:every(0.1,function()
-        self.area:addGameObject("WaterParticleEffect",self.x + random(-gw,gw),self.y + random(-gh,gh),{parent = self, r = random(2,4), d = random(0.15,0.25),color = background_color})
-    end)
-    self.timer:every(0.1,function()
-        self.area:addGameObject("WaterParticleEffect",self.x + random(-50,50) +self.w * 6 * math.cos(self.r),self.y + random(-50,50)  + self.h* 6 * math.sin(self.r),{parent = self, r = random(2,4), d = random(0.15,0.25),color = self.water_color})
-        for i=0,self.trail.n do
-            self.area:addGameObject("WaterParticleEffect",self.trail.x[i] + random(-50,50) +self.w * math.cos(self.r),self.trail.y[i] + random(-50,50)  + self.h * math.sin(self.r),{parent = self, r = random(2,4), d = random(0.15,0.25),color = self.water_color})
-        end
-    end)
-    self.timer:every(random(5,7),function() self:tick()end)
-
 
 
 
@@ -75,6 +53,57 @@ function Player:new(area,x,y,otps)
             self.w, self.w/2, -- 6
         }
     end
+    self.trail.model = {}
+    self.trail.model.name = {}
+    self.trail.model.color = {}
+    self.trail.model.polygons = {}
+
+    for i=0,self.trail.n do -- количество елементов в хвосте
+        self.trail.x[i] = x-- координаты
+        self.trail.y[i] = y + i -- чтобы спавнились сверху а не в одной точкеs
+        self.trail.model.name[i] = "usel"
+        self.trail.model.color[i] = default_color
+        if self.trail.model.name[i] == "usel" then
+            self.stats.turn_speed = self.stats.turn_speed
+            self.stats.base_speed = self.stats.base_speed
+            self.stats.speed_up = self.stats.speed_up 
+            self.stats.speed_down = self.stats.speed_down 
+            print("dd")
+    
+            self.trail.model.polygons[1] = {
+                -self.w/2,0,
+                -self.w,-self.w/2,
+                self.w/2,-self.w/1.2,
+                self.w,0,
+                self.w/2,self.w/1.2,
+                -self.w,self.w/2
+            }
+        elseif self.trail.model.name[i] == "kia" then
+            self.stats.turn_speed = self.stats.turn_speed
+            self.stats.base_speed = self.stats.base_speed
+            self.stats.speed_up = self.stats.speed_up 
+            self.stats.speed_down = self.stats.speed_down 
+            print("ff")
+    
+            self.trail.model.polygons[1] = {
+                self.w,0,
+                self.w,-self.w/2,
+                self.w/2,-self.w/1.2,
+                self.w,0,
+                self.w/2,self.w/1.2,
+                -self.w,self.w/2
+            }
+        end
+        --print(self.trail.y[i])
+        self.trail.collider[i] = self.area.world:newCircleCollider(self.trail.x[i],self.trail.y[i] + (self.w-i),self.w) --[[
+            каждый отдельный обьект в массиве определяется как колайдер. Кргу должен иметь координаты X Y и радиус
+            смезение по игроку для растояние между обьектами в хвосте. Координата + Радиус головы + радиус хвоста
+        ]]--
+        self.trail.collider[i]:setObject(self)
+        self.trail.collider[i]:setCollisionClass("Trail")
+
+    end
+    
 
     self.r = -math.pi /2
     self.r_turn_speed = math.pi * self.stats.turn_speed
@@ -105,20 +134,46 @@ function Player:new(area,x,y,otps)
     self.a = 100
 
     self.wouble = 1.25
+    self.fill = "line"
+
+    self.timer:every(0.1,function()
+        self.area:addGameObject("WaterParticleEffect",self.x + random(-gw,gw),self.y + random(-gh,gh),{parent = self, r = random(2,4), d = random(0.15,0.25),color = background_color})
+    end)
+    self.timer:every(0.1,function()
+        self.area:addGameObject("WaterParticleEffect",self.x + random(-50,50) +self.w * 6 * math.cos(self.r),self.y + random(-50,50)  + self.h* 6 * math.sin(self.r),{parent = self, r = random(2,4), d = random(0.15,0.25),color = self.water_color})
+        for i=0,self.trail.n do
+            self.area:addGameObject("WaterParticleEffect",self.trail.x[i] + random(-50,50) +self.w * math.cos(self.r),self.trail.y[i] + random(-50,50)  + self.h * math.sin(self.r),{parent = self, r = random(2,4), d = random(0.15,0.25),color = self.water_color})
+        end
+    end)
+    self.timer:every(random(5,7),function() self:tick()end)
 
 end
 
 function Player:shoot(x,y,time)
     local d = 1.2*self.w
     soundShoot()
+    self:addBioMaterial(-1)
     self.area:addGameObject('ShootEffect',x+ d*math.cos(self.r),y + d * math.sin(self.r),self,self.d) -- на линии огня эффект
     self.area:addGameObject('Projectile',x+ 1.5 * d * math.cos(self.r) ,y + 1.5 * d * math.sin(self.r),self.r)
     
 end
 
+function Player:addBioMaterial(amount)
+    self.ammo = math.min(self.ammo + amount,self.max_ammo)
+    print(self.ammo)
+end
+
 function Player:addTail(trail,w,area,x,y) -- добавление хвоста
     trail.n = trail.n + 1  -- один добавился
     for i=trail.n ,trail.n  do -- просто луп проходит один раз
+        local c = math.random(0,1)
+        if c == 0 then
+            trail.model.color[i] = default_color
+            trail.model.name[i] = "kia"
+        else 
+            trail.model.color[i] = default_color
+            trail.model.name[i] = "usel"
+        end
         trail.x[trail.n] = trail.x[trail.n - 1]-- весь новый хвост заимствует данные из предыдущего
         --[[
             здесь проверять существует ли предпоследний обьект не нужно
@@ -127,6 +182,8 @@ function Player:addTail(trail,w,area,x,y) -- добавление хвоста
         --print(self.trail.y[i])
         trail.collider[trail.n] = area.world:newCircleCollider(trail.x[trail.n],trail.y[trail.n] + (w + (w - trail.n)),w)
         trail.collider[trail.n]:setObject(self)
+        trail.collider[trail.n]:setCollisionClass("Trail")
+
     end
 end
 
@@ -138,13 +195,21 @@ function Player:update(dt)
         soundPickUp()
         local collision_data = self.collider:getEnterCollisionData('Collectable')
         local object = collision_data.collider:getObject()
+        if object:is(DnaPoint) then
+            self.wouble = 6
+            self.fill = "fill"
+            object:die()
+        end
         if object:is(bioMaterial) then
-            self.wouble = 5
+            self.wouble = 6
+            self.fill = "fill"
             --flash(2,bio_material_color)
             object:die()
+            self:addBioMaterial(1)
         end
     else 
         self.wouble = 1.25
+        self.fill = "line"
     end
 
     self.boost = math.min(self.boost + 10*dt,self.max_boost)
@@ -224,23 +289,23 @@ end
 function Player:draw()
     for i=0,self.trail.n do
         if i==0  then
-            love.graphics.setColor(default_color)
+            love.graphics.setColor(self.trail.model.color[i])
             pushRotate(self.trail.x[i],self.trail.y[i],self.tr)
-            for _,polygon in ipairs(self.model.polygons) do
+            for _,polygon in ipairs(self.trail.model.polygons) do
                 local points = fn.map(polygon,function(v,k)
                     if k % 2 == 1 then
-                        return self.trail.x[i] + v + random(-1,1) 
+                        return self.trail.x[i] + v + random(-self.wouble,self.wouble) 
                     else
-                        return self.trail.y[i] + v + random(-1,1) 
+                        return self.trail.y[i] + v + random(-self.wouble,self.wouble) 
                     end
                 end)
-                love.graphics.polygon('line',points)
+                love.graphics.polygon(self.fill,points)
             end
             love.graphics.pop()
         else
-            love.graphics.setColor(default_color)
+            love.graphics.setColor(self.trail.model.color[i])
             pushRotate(self.trail.x[i],self.trail.y[i],self.trr)
-            for _,polygon in ipairs(self.model.polygons) do --[[ каждая линия в массиве pollygons обрабатываетсяб
+            for _,polygon in ipairs(self.trail.model.polygons) do --[[ каждая линия в массиве pollygons обрабатываетсяб
                     если элемент в массиве под четным индексом, то это по x
                 ]]
                 local points = fn.map(polygon,function(v,k)
@@ -250,7 +315,7 @@ function Player:draw()
                         return self.trail.y[i] + v + random(-self.wouble,self.wouble) 
                     end
                 end)
-                love.graphics.polygon('line',points)
+                love.graphics.polygon(self.fill,points)
             end
             love.graphics.pop()
         end
@@ -265,7 +330,7 @@ function Player:draw()
                 return self.y + v + random(-self.wouble,self.wouble) 
             end
         end)
-        love.graphics.polygon('line',points)
+        love.graphics.polygon(self.fill,points)
     end
     love.graphics.pop()
 end

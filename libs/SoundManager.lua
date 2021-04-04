@@ -8,7 +8,7 @@ function soundInit()
     tags = {
         sfx = {volume = 1},
         master = {volume = 1},
-        music = {base_volume = 1, volume = 0.5, multiplier = 0,loop = true,music = true},
+        music = {base_volume = 1, volume = 0.2, multiplier = 0,loop = true,music = true},
         game = {base_volume = 1, volume = 1, multiplier = 0}
     }
 

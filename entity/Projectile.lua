@@ -3,7 +3,7 @@ Projectile = GameObject:extend()
 function Projectile:new(area,x,y,r,s,v,dir,opts) -- пуля
     Projectile.super.new(self,area,x,y,opts)
     self.s = 2
-    self.v = 500
+    self.v = 250
     self.trail = {}
     self.r = r 
     --self.color = {random(0,1),random(0,1),random(0,1)}
@@ -32,7 +32,17 @@ end
 
 function Projectile:draw()
     love.graphics.setColor(self.color)
+
+    pushRotate(self.x,self.y,Vector(self.collider:getLinearVelocity()):angle())
+    love.graphics.setLineWidth(self.s - self.s/4)
+    --love.graphics.line(self.x - 2*self.s,self.y,self.x,self.y)
     love.graphics.circle('line',self.x,self.y,self.s) -- кружок
+    self.area:addGameObject("WaterParticleEffect",self.x + random(-5,5) +self.s * 6 * math.cos(self.r),self.y + random(-5,5)  + self.s* 6 * math.sin(self.r),{parent = self, r = random(2,5), d = random(0.5,1),color = background_color,time = 0.1})
+    love.graphics.setColor(default_color)
+    --love.graphics.line(self.x,self.y,self.x + 2*self.s,self.y)
+    love.graphics.setLineWidth(1)
+    --love.graphics.circle('line',self.x,self.y,self.s) -- кружок
+    love.graphics.pop()
     love.graphics.setColor(1,1,1) -- нужно вернуть для того чтобы если для любых других обектов цвет небыл задан то он бы рисовался дефолтным цветом
 end
 

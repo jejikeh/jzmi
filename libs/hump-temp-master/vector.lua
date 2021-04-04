@@ -181,6 +181,10 @@ function vector:mirrorOn(v)
 	return new(s * v.x - self.x, s * v.y - self.y)
 end
 
+function vector:angle()
+    return atan2(self.y, self.x)
+end
+
 function vector:cross(v)
 	assert(isvector(v), "cross: wrong argument types (<vector> expected)")
 	return self.x * v.y - self.y * v.x

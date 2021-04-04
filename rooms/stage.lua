@@ -7,12 +7,19 @@ function Stage:new()
     self.area.world:addCollisionClass("Player")
     self.area.world:addCollisionClass("Projectile",{ignores = {'Projectile'}})
     self.area.world:addCollisionClass("Collectable",{ignores = {'Projectile'}})
+    self.area.world:addCollisionClass("Trail",{ignores = {'Player',"Trail"}})
+
+
 
     self.timer = Timer()
     self.main_canvas = love.graphics.newCanvas(gw, gh) -- слой с графикой 
     self.player = self.area:addGameObject("Player",gw/2,gh/2) -- теперь эта область имеет переменну игрока
-    input:bind("p",function() self.area:addGameObject("bioMaterial",random(camera.x - gw,camera.x),random(camera.y- gh,camera.y),self.player) end) -- умри 
-    --randomMusicPlay()
+    input:bind("p",function() 
+        self.area:addGameObject("DnaPoint",random(camera.x - gw,camera.x),random(camera.y- gh,camera.y),self.player) 
+        
+        self.area:addGameObject("bioMaterial",random(camera.x - gw,camera.x),random(camera.y- gh,camera.y),self.player) 
+    end) -- умри 
+    randomMusicPlay()
 end
 
 function Stage:destroy()
@@ -33,7 +40,8 @@ end
 function Stage:draw()
     love.graphics.setCanvas(self.main_canvas) -- вся графика рендерится на этом слое
     love.graphics.clear()
-    love.graphics.print(self.player.trail.n)
+    --love.graphics.print(self.player.trail.n)
+    love.graphics.print("fps: "..tostring(love.timer.getFPS( )), 0, 0)
         camera:attach(0,0,w,h)
         self.area:draw()
         --love.graphics.circle("line",gw/2,gh/2,50)

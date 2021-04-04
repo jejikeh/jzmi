@@ -10,6 +10,7 @@ Draft = require "libs/draft/draft"
 require("utils")
 require("globals")
 require("libs/SoundManager")
+require("libs/utf8")
 
 w, h = love.window.getDesktopDimensions()
 --sx,sy = w/gw,h/gh
@@ -48,6 +49,7 @@ function love.load()
     --love.window.setFullscreen(true,'desktop')
     love.graphics.setDefaultFilter('nearest', 'nearest')
     love.graphics.setLineStyle("rough")
+
     -- библиотеки
     camera = Camera()
     draft = Draft()
@@ -91,6 +93,8 @@ function love.load()
     rooms = {} -- все комнаты:(
     current_room = nil -- текущая комната
     local room_files = {}
+    loadFonts('resources/fonts')
+
     recursiveEnumerate('rooms',room_files) -- собственно получение этих сущностей в ввиде массива
     requireFiles(room_files) 
 
@@ -104,6 +108,21 @@ function requireFiles(files)
         local file = file:sub(1,-5)
         --print(file)
         require(file)
+    end
+end
+
+function loadFonts(path)
+    fonts = {}
+    local font_paths = {}
+    recursiveEnumerate(path,font_paths)
+    for i = 8,16 do
+        for _,font_path in ipairs(font_paths) do
+            local last_index = font_path:find("/[^/]*$")
+            local font_name = font_path:sub(last_index+1,-5)
+            local font = love.graphics.newFont(font_path,i)
+            font:setFilter('nearest','nearest')
+            fonts[font_name .. 'Size' .. i] = font
+        end
     end
 end
 

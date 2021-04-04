@@ -8,9 +8,10 @@ function WaterParticleEffect:new(area,x,y,opts)
     self.r = 0
     self.color = opts.color
     self.t= opts.parent.r
+    self.time = opts.time or 0.5
     self.v = 60
-    self.timer:tween(0.5,self,{r=2},"in-out-cubic",function() 
-        self.timer:tween(0.5,self,{r=0},"in-out-cubic",function() self.dead = true end)
+    self.timer:tween(self.time,self,{r=2},"in-out-cubic",function() 
+        self.timer:tween(self.time,self,{r=0},"in-out-cubic",function() self.dead = true end)
     end)
 
     --self.collider = self.area.world:newCircleCollider(self.x,self.y,self.r)
