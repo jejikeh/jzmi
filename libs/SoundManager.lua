@@ -8,13 +8,13 @@ function soundInit()
     tags = {
         sfx = {volume = 1},
         master = {volume = 1},
-        music = {base_volume = 1, volume = 1, multiplier = 0,loop = true,music = true},
+        music = {base_volume = 1, volume = 0.5, multiplier = 0,loop = true,music = true},
         game = {base_volume = 1, volume = 1, multiplier = 0}
     }
 
     register('game_shoot_1','static',{'master','sfx','game'},false)
-    register('game_shoot_2','static',{'master','sfx','game'},false)
     register('game_shoot_3','static',{'master','sfx','game'},false)
+    register('game_pick_up_1','static',{'master','sfx','game'},false)
     --register('menu_click','static',{'master','sfx','game'},false)
     register('game_hurt_1','static',{'master','sfx','game'},false)
     register('game_hurt_2','static',{'master','sfx','game'},false)
@@ -66,6 +66,10 @@ end
 
 function soundShoot()
     addSound('game_shoot_1')
+end
+
+function soundPickUp()
+    addSound("game_pick_up_1")
 end
 
 function soundExplosion()

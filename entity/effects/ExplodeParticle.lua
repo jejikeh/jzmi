@@ -3,7 +3,7 @@ ExplodeParticle = GameObject:extend()
 function ExplodeParticle:new(area,x,y,opts) -- частицы взрыва
     ExplodeParticle.super.new(self,area,x,y,opts)
     self.trail = {} -- баг
-    camera:shake(2,0.5,100)
+    camera:shake(opts.s1,opts.s2,opts.s3)
     self.color = opts.color or default_color -- либо дэфолд либо задается так (...,{color = {x,x,x})
     self.r = random(0,2*math.pi)
     self.s = opts.s or random(2,3)

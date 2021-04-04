@@ -6,3 +6,4 @@ ammo_color = {123, 200, 164}
 boost_color = {76, 195, 217}
 hp_color = {0.98, 0.3, 0.1}
 skill_point_color = {255, 198, 93}
+bio_material_color = {0.9,0.4,0.9}

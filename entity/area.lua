@@ -7,7 +7,7 @@ end
 
 function Area:addPhysicsWorld() -- просто физизка которую можно создать в любой комнате  
     self.world = wf.newWorld(0,0,true)
-    self.world:setGravity(0, 512)
+    self.world:setGravity(0, 0)
 end
 
 function Area:destroy()
@@ -58,8 +58,8 @@ function Area:update(dt)
 end
 
 function Area:draw()
-    --if self.world then self.world:draw() end -- т.к это рисует коллайдер а не спрайт
-    for i,game_object in ipairs(self.game_objects) do
+    -- if self.world then self.world:draw() end -- т.к это рисует коллайдер а не спрайт
+    for _,game_object in ipairs(self.game_objects) do
         game_object:draw()
     end
 end

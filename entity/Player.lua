@@ -8,6 +8,7 @@ function Player:new(area,x,y,otps)
     self.x,self.y =x,y
     self.w,self.h = 8,16
     self.collider = self.area.world:newCircleCollider(self.x,self.y,self.w) -- создание колайдера
+    self.collider:setCollisionClass("Player")
     self.trail = {}
     self.dir = -1
     self.trail.n = 0
@@ -42,24 +43,30 @@ function Player:new(area,x,y,otps)
         end
     end)
     self.timer:every(random(5,7),function() self:tick()end)
-    -- матеша
 
-    self.model= "Kokora"
-    self.polygons = {}
 
-    if self.model == "Kokora" then
 
-        self.r = -math.pi /2
-        self.rv = 1*math.pi
-        self.v = 0
-        self.rt = 0 -- Для хвосат поворрот
-        self.base_max_v = 75 -- обычная скорость
-        self.max_v = self.base_max_v
-        self.boost_speed_up = 1.5
-        self.boost_speed_down = 0.5
 
-        self.a = 100
-        self.polygons[1] = {
+    --характеристика
+
+    self.stats = {}
+    self.stats.turn_speed = 1
+    self.stats.base_speed = 100
+    self.stats.speed_up = 1.5
+    self.stats.speed_down = 0.5
+
+
+    -- модели для головы
+    self.model = {}
+    self.model.name = "Kokora"
+    self.model.polygons = {}
+
+    if self.model.name == "Kokora" then
+        self.stats.turn_speed = self.stats.turn_speed 
+        self.stats.base_speed = self.stats.base_speed 
+        self.stats.speed_up = self.stats.speed_up 
+        self.stats.speed_down = self.stats.speed_down
+        self.model.polygons[1] = {
             self.w/2, 0, -- 1
             self.w, -self.w/2, -- 2
             -self.w/2, -self.w, -- 3
@@ -68,6 +75,37 @@ function Player:new(area,x,y,otps)
             self.w, self.w/2, -- 6
         }
     end
+
+    self.r = -math.pi /2
+    self.r_turn_speed = math.pi * self.stats.turn_speed
+    self.v = 0
+    self.rt = 0 -- Для хвосат поворрот
+
+
+    self.max_hp = 100
+    self.hp = self.max_hp
+
+    self.max_ammo = 100
+    self.ammo = self.max_ammo
+
+    self.base_max_v = self.stats.base_speed
+    self.max_v = self.base_max_v
+
+
+    self.boost_speed_up = self.stats.speed_up
+    self.boost_speed_down = self.stats.speed_down
+
+
+    self.max_boost = 100
+    self.boost = self.max_boost
+    self.can_boost = true
+    self.boost_timer = 0
+    self.boost_cooldown = 2
+
+    self.a = 100
+
+    self.wouble = 1.25
+
 end
 
 function Player:shoot(x,y,time)
@@ -80,7 +118,7 @@ end
 
 function Player:addTail(trail,w,area,x,y) -- добавление хвоста
     trail.n = trail.n + 1  -- один добавился
-    for i=trail.n-1 ,trail.n  do -- просто луп проходит один раз
+    for i=trail.n ,trail.n  do -- просто луп проходит один раз
         trail.x[trail.n] = trail.x[trail.n - 1]-- весь новый хвост заимствует данные из предыдущего
         --[[
             здесь проверять существует ли предпоследний обьект не нужно
@@ -94,20 +132,50 @@ end
 
 function Player:update(dt)
     Player.super.update(self,dt)
+
+
+    if not self.dead and self.collider:enter('Collectable') then
+        soundPickUp()
+        local collision_data = self.collider:getEnterCollisionData('Collectable')
+        local object = collision_data.collider:getObject()
+        if object:is(bioMaterial) then
+            self.wouble = 5
+            --flash(2,bio_material_color)
+            object:die()
+        end
+    else 
+        self.wouble = 1.25
+    end
+
+    self.boost = math.min(self.boost + 10*dt,self.max_boost)
+    self.boost_timer = self.boost_timer + dt
+    if self.boost_timer > self.boost_cooldown then self.can_boost = true end
     self.boosting = false
     self.stopped = false
     self.max_v = self.base_max_v
-    if input:down('up') then 
+    if input:down('up') and self.boost > 1 and self.can_boost then 
         self.boosting = true
         self.stopped = false
         self.max_v = self.boost_speed_up*self.base_max_v 
-        self.nt = 0.5
+        self.boost = self.boost - 50 * dt
+        if self.boost <= 1 then
+            self.boosting = false
+            self.can_boost = false
+            self.boost_timer = 0
+        end
+        
     end
-    if input:down('down') then 
-        self:shoot(self.x,self.y)
+    if input:down('down') and self.boost > 1 and self.can_boost  then 
+        --self:shoot(self.x,self.y)
         self.boosting = false
         self.stopped = true
         self.max_v = self.boost_speed_down*self.base_max_v 
+        self.boost = self.boost - 50 * dt
+        if self.boost <= 1 then
+            self.boosting = false
+            self.can_boost = false
+            self.boost_timer = 0
+        end
     end
     if self.boosting then 
         self.water_color = water_boost_buble 
@@ -119,9 +187,9 @@ function Player:update(dt)
 
     --if input:down("shoot") then self:shoot(self.x,self.y) end
 
-    if input:down("left") then self.r = self.r - self.rv * dt end
+    if input:down("left") then self.r = self.r - self.r_turn_speed * dt end
 
-    if input:down("right") then self.r = self.r + self.rv * dt end
+    if input:down("right") then self.r = self.r + self.r_turn_speed * dt end
     if input:pressed("add") then 
         Player:addTail(self.trail,self.w,self.area,self.x,self.y)
     end
@@ -158,7 +226,7 @@ function Player:draw()
         if i==0  then
             love.graphics.setColor(default_color)
             pushRotate(self.trail.x[i],self.trail.y[i],self.tr)
-            for _,polygon in ipairs(self.polygons) do
+            for _,polygon in ipairs(self.model.polygons) do
                 local points = fn.map(polygon,function(v,k)
                     if k % 2 == 1 then
                         return self.trail.x[i] + v + random(-1,1) 
@@ -172,14 +240,14 @@ function Player:draw()
         else
             love.graphics.setColor(default_color)
             pushRotate(self.trail.x[i],self.trail.y[i],self.trr)
-            for _,polygon in ipairs(self.polygons) do --[[ каждая линия в массиве pollygons обрабатываетсяб
+            for _,polygon in ipairs(self.model.polygons) do --[[ каждая линия в массиве pollygons обрабатываетсяб
                     если элемент в массиве под четным индексом, то это по x
                 ]]
                 local points = fn.map(polygon,function(v,k)
                     if k % 2 == 1 then
-                        return self.trail.x[i] + v + random(-1,1.25) 
+                        return self.trail.x[i] + v + random(-self.wouble,self.wouble) 
                     else
-                        return self.trail.y[i] + v + random(-1,1) 
+                        return self.trail.y[i] + v + random(-self.wouble,self.wouble) 
                     end
                 end)
                 love.graphics.polygon('line',points)
@@ -189,12 +257,12 @@ function Player:draw()
     end
     pushRotate(self.x,self.y,self.r)
     love.graphics.setColor(default_color)
-    for _,polygon in ipairs(self.polygons) do
+    for _,polygon in ipairs(self.model.polygons) do
         local points = fn.map(polygon,function(v,k)
             if k % 2 == 1 then
-                return self.x + v + random(-1.25,1.25) 
+                return self.x + v + random(-self.wouble,self.wouble) 
             else
-                return self.y + v + random(-1.25,1.25) 
+                return self.y + v + random(-self.wouble,self.wouble) 
             end
         end)
         love.graphics.polygon('line',points)
@@ -206,13 +274,13 @@ function Player:destroy()
     soundDeath()
     Player.super.destroy(self)
     slow(0.25, 0.5)
-    flash(2)
+    flash(2,default_color)
     self.dead = true
     for i = 1,love.math.random(10,20) do
-        self.area:addGameObject("ExplodeParticle",self.x,self.y,{color = hp_color,d = 0.5,s=random(1,5),v = random(180,380)})
+        self.area:addGameObject("ExplodeParticle",self.x,self.y,{color = hp_color,d = 0.5,s=random(1,5),v = random(180,380), s1 = 2, s2 = 0.5, s3 = 100})
     end
     for i = 1,self.trail.n do
-            self.area:addGameObject("ExplodeParticle",self.trail.x[i],self.trail.y[i],{color = hp_color,d = 2,s=random(1,5),v = random(180,380)})
+            self.area:addGameObject("ExplodeParticle",self.trail.x[i],self.trail.y[i],{color = hp_color,d = 2,s=random(1,5),v = random(180,380), s1 = 2, s2 = 0.5, s3 = 100})
     end
 end
 

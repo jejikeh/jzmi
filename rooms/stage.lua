@@ -4,10 +4,14 @@ function Stage:new()
 
     self.area = Area(self) -- область в которой будут обьекты
     self.area:addPhysicsWorld() -- добавление физики
+    self.area.world:addCollisionClass("Player")
+    self.area.world:addCollisionClass("Projectile",{ignores = {'Projectile'}})
+    self.area.world:addCollisionClass("Collectable",{ignores = {'Projectile'}})
+
     self.timer = Timer()
     self.main_canvas = love.graphics.newCanvas(gw, gh) -- слой с графикой 
     self.player = self.area:addGameObject("Player",gw/2,gh/2) -- теперь эта область имеет переменну игрока
-    --input:bind("k",function() self.player:destroy() end) -- умри 
+    input:bind("p",function() self.area:addGameObject("bioMaterial",random(camera.x - gw,camera.x),random(camera.y- gh,camera.y),self.player) end) -- умри 
     --randomMusicPlay()
 end
 

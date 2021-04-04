@@ -2,9 +2,11 @@ Object = require "libs/classic-master/classic"
 Input = require"libs/boipushy-master/Input"
 Timer = require "libs/hump-temp-master/timer"
 Camera = require "libs/hump-temp-master/camera"
+Vector = require 'libs/hump-temp-master/vector'
 ripple = require "libs/ripple-master/ripple"
 fn = require "libs/Moses-master/moses"
 wf = require("libs/windfield")
+Draft = require "libs/draft/draft"
 require("utils")
 require("globals")
 require("libs/SoundManager")
@@ -48,6 +50,7 @@ function love.load()
     love.graphics.setLineStyle("rough")
     -- библиотеки
     camera = Camera()
+    draft = Draft()
     input = Input() -- управление вводом и взводом :/
     timer = Timer() -- управление временем
     --playSound()
@@ -117,7 +120,6 @@ function recursiveEnumerate(folder,file_list)
 end
 
 function love.update(dt)
-    
     soundUpdate(slow_amount)
     if current_room then current_room:update(dt * slow_amount)end -- если в дный мнт комната ее нужно обновитть
     if slow_amount >= 1 then
@@ -132,9 +134,10 @@ function slow(amount, duration)
     slow_amount = amount
     timer:tween(duration, _G, {slow_amount = 1}, 'in-out-cubic')
 end
-
-function flash(frames)
+flash_color = 0
+function flash(frames,color)
     flash_frames = frames
+    flash_color = color
 end
 
 
@@ -148,9 +151,9 @@ function love.draw()
         if flash_frames == -1 then flash_frames = nil end
     end
     if flash_frames then
-        love.graphics.setColor(background_color)
+        love.graphics.setColor(flash_color)
         love.graphics.rectangle("fill",0,0, gw*sx,gh*sy)
-        love.graphics.setColor(1,1,1)
+        love.graphics.setColor(default_color)
     end
 end
 
