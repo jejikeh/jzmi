@@ -14,10 +14,6 @@ end
 function GameObject:update(dt)
     if self.timer then self.timer:update(dt)  end-- обновление всех
     if self.collider then self.x, self.y = self.collider:getPosition() end
-    if self.trail.collider then -- каждый обновляем отдельно(.collider очень важен иначе после удаление хвоста всеравно может проверяться луп)
-        for i=0,self.trail.n do
-        self.trail.x[i], self.trail.y[i] = self.trail.collider[i]:getPosition() end
-    end
 end
 
 function GameObject:draw()
@@ -27,11 +23,5 @@ function GameObject:destroy()
     self.dead = true
     self.timer:clear()
     if self.collider then self.collider:destroy() end
-    if self.trail.collider then -- .colider очень ваден т.к можно случайно удалить и сломать
-        for i=0,self.trail.n do
-            self.trail.collider[i]:destroy() 
-        end
-    end
     self.collider = nil
-    self.trail.collider = nil
 end

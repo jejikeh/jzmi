@@ -58,7 +58,7 @@ function Area:update(dt)
 end
 
 function Area:draw()
-    -- if self.world then self.world:draw() end -- т.к это рисует коллайдер а не спрайт
+    --if self.world then self.world:draw() end -- т.к это рисует коллайдер а не спрайт
     for _,game_object in ipairs(self.game_objects) do
         game_object:draw()
     end

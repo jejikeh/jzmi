@@ -70,9 +70,16 @@ function love.load()
 
 
     input:bind('left', 'left')
+    input:bind('a', 'left')
+
     input:bind('right', 'right')
+    input:bind('d', 'right')
+
     input:bind('down', 'down')
+    input:bind('s', 'down')
+
     input:bind('up', 'up')
+    input:bind('w', 'up')
     input:bind("a","add")
     input:bind("space","shoot")
 

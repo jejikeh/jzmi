@@ -7,7 +7,6 @@ function bioMaterial:new(area,x,y,player,opts)
     self.w,self.h = 8,8
     self.polligons = {}
 
-    self.trail = {}
     self.collider = self.area.world:newRectangleCollider(self.x,self.y,self.w,self.h)
     self.collider:setCollisionClass("Collectable")
     self.collider:setObject(self)

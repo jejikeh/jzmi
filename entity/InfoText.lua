@@ -3,7 +3,6 @@ InfoText = GameObject:extend()
 function InfoText:new(area,x,y,opts)
     InfoText.super.new(self,area,x,y,opts)
     self.x,self.y = x,y
-    self.trail = {}
     self.color = opts.color or default_color
     self.background_colors = {}
     self.foreground_colors = {}

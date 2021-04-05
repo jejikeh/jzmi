@@ -23,3 +23,10 @@ all_colors = fn.append(default_colors,negative_colors)
 
 
 score = 0
+
+stats = {
+    turn_speed = 1,
+    base_speed = 100,
+    speed_up = 1.5,
+    speed_down = 0.5
+}
