@@ -255,9 +255,6 @@ function Player:update(dt)
     if input:down("left") then self.r = self.r - self.r_turn_speed * dt end
 
     if input:down("right") then self.r = self.r + self.r_turn_speed * dt end
-    if input:pressed("add") then 
-        Player:addTail(self.trail,self.w,self.area,self.x,self.y)
-    end
 
     --local mx,my = love.mouse.getPosition()
     --self.r = getAngle(self.x,self.y,mx,my)
