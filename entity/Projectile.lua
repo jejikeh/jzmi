@@ -37,7 +37,7 @@ function Projectile:draw()
     love.graphics.setLineWidth(self.s - self.s/4)
     --love.graphics.line(self.x - 2*self.s,self.y,self.x,self.y)
     love.graphics.circle('line',self.x,self.y,self.s) -- кружок
-    self.area:addGameObject("WaterParticleEffect",self.x + random(-5,5) +self.s * 6 * math.cos(self.r),self.y + random(-5,5)  + self.s* 6 * math.sin(self.r),{parent = self, r = random(2,5), d = random(0.5,1),color = background_color,time = 0.1})
+    self.area:addGameObject("WaterParticleEffect",self.x + random(-5,5) +self.s * 6 * math.cos(self.r),self.y + random(-5,5)  + self.s* 6 * math.sin(self.r),{parent = self, r = random(1,2), d = random(1.5,1),color = background_color,time = 0.1})
     love.graphics.setColor(default_color)
     --love.graphics.line(self.x,self.y,self.x + 2*self.s,self.y)
     love.graphics.setLineWidth(1)

@@ -10,6 +10,9 @@ function Player:new(area,x,y,otps)
     self.collider = self.area.world:newCircleCollider(self.x,self.y,self.w) -- создание колайдера
     self.collider:setCollisionClass("Player")
     self.dir = -1
+    self.trail = {}
+    self.trail.x = {}
+    self.trail.y = {}
     self.d = 1.2*self.w -- диа
     self.collider:setObject(self)
     self.shoot_speed = 1
@@ -164,7 +167,9 @@ function Player:update(dt)
 
     if input:down("right") then self.r = self.r + self.r_turn_speed * dt end
 
-    if input:pressed("add") then self.area:addGameObject("Trail",self.x,self.y,self) end
+    if input:pressed("add") then 
+        self.area:addGameObject("Trail",self.x,self.y,self) 
+    end
 
     --local mx,my = love.mouse.getPosition()
     --self.r = getAngle(self.x,self.y,mx,my)
